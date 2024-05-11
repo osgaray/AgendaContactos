@@ -1,16 +1,22 @@
-import java.util.ArrayList;
+import java.util.Scanner;
 
 public class App {
     // 2- arreglo bidimensional de contactos
-    public static String[][] contactos;
+    public static String[][] contactos = new String[100][2];
     
     // 3- metodos
     // agregar contacto
-    public static void agregarContacto(String nombre,String telefono){
-        int filas = contactos.length;
-        contactos[filas][0] = nombre;
-        contactos[filas][1] = telefono;
-        System.out.println("Contacto agregado exitosamente");
+    public static int filas = 0; // Variable para llevar el control de las filas ocupadas
+
+    public static void agregarContacto(String nombre, String telefono){
+        if (filas < contactos.length) { // Verificar si hay espacio disponible en el arreglo
+            contactos[filas][0] = nombre;
+            contactos[filas][1] = telefono;
+            System.out.println("Contacto agregado exitosamente");
+            filas++; // Incrementar el índice de la siguiente fila
+        } else {
+            System.out.println("No se puede agregar más contactos. El arreglo está lleno.");
+        }
     }
 
     // 4- buscar contacto
@@ -23,39 +29,86 @@ public class App {
         }
         System.out.println("Contacto no encontrado");
     }
+  
 
-    // 5- eliminar contacto
-    public static void eliminarContacto(String nombre, String string){
-        for (int i = 0; i < contactos.length; i++) {
-            // si el nombre esta en alguna posición del arreglo
-            if (contactos[i][0].equalsIgnoreCase(nombre)) {
-                // crear un arreglo temporal para almacenar los contactos a excepción del contacto a eliminar
-                String[][] contactosTemp = new String[contactos.length-1][];
-                // alamcenar los contactos, excepto el que se va a eliminar
-                for (int j = 0; j<(contactos.length-1);i++) {
-                    // si el contacto NO es el que vamos a eliminar entonces si lo agregamos al arreglo temporal
-                    if (!contactos[j][0].equalsIgnoreCase(nombre)){
-                        // agregar contactos al arreglo temporal
-                        contactosTemp[j][0]=contactos[j][0];
-                        contactosTemp[j][1]=contactos[j][1];
-                    }
-                }
+    // 5- mostrar contactos
+    public static void mostrarContactos(String[][] contactos) {
+        System.out.println("Lista de contactos:");
+        for (int i = 0; i < filas; i++) { // Recorrer solo las filas ocupadas
+            if (contactos[i][0] != null && contactos[i][1] != null) { // Verificar que ambos campos tengan datos
+                System.out.println("Nombre: " + contactos[i][0] + "\tTeléfono: " + contactos[i][1]);
             }
-            System.out.println("Contacto no encontrado");
+        }
+    }
+
+    // 6- comparar contactos
+    public static void compararContactos(String nombreA, String nombreB){
+        boolean sonIguales=false;
+        for (int i = 0; i < contactos.length; i++) {
+            if ((contactos[i][0].equalsIgnoreCase(nombreA) && contactos[i][0].equalsIgnoreCase(nombreB))) {
+                System.out.println("Los contactos "+nombreA+ " y "+nombreB+" son iguales.");
+                sonIguales=true;
+            }
+        }
+        if(!sonIguales){
+            System.out.println("Los contactos "+nombreA+ " y "+nombreB+" NO son iguales.");
         }
     }
     public static void main(String[] args) throws Exception {
+        Scanner input = new Scanner(System.in);
         System.out.println("Agenda de contactos");
         // 1- Menú
         int opcion;
-        System.out.println("Que opción deseas realizar?");
-        System.out.println("1. Agregar contacto");
-        System.out.println("2. Buscar contacto");
-        System.out.println("3. Eliminar contacto");
-        System.out.println("4. Mostrar contactos");
-        System.out.println("5. Comparar contacto");
 
+        boolean salir;
+        do {
+            try {
+                System.out.println("Que opción deseas realizar?");
+                System.out.println("1. Agregar contacto");
+                System.out.println("2. Buscar contacto");
+                System.out.println("3. Mostrar contactos");
+                System.out.println("4. Comparar contacto");
+                System.out.println("5. Salir");
 
-        
+                opcion = input.nextInt();
+                input.nextLine();
+                switch (opcion) {
+                    case 1:
+                        System.out.println("Ingresa el nombre del contacto");
+                        String nombre = input.nextLine();
+                        System.out.println("Ingrese el numero del contacto");
+                        String numero = input.nextLine();
+                        agregarContacto(nombre, numero);
+                        break;
+                    case 2:
+                        System.out.println("Escribe el nombre del contacto que quieres buscar");
+                        String nombreabuscar = input.nextLine();
+                        buscarContacto(nombreabuscar);
+                        break;
+                    case 3:
+                        mostrarContactos(contactos);
+                        break;
+                    case 4:
+                        System.out.println("Ingresa el primer nombre a comparar");
+                        String nombreA = input.nextLine();
+                        System.out.println("Escribe el segundo nombre a comparar");
+                        String nombreB = input.nextLine();
+                        compararContactos(nombreA, nombreB);
+                        break;
+                
+                    default:
+                        System.out.println("La opcion es incorrecta");
+                        break;
+                }
+
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            System.out.println("Quieres continuar? (si/no)");
+            char continuar = input.nextLine().charAt(0);
+            salir = (continuar == 's')? false:true;
+        } while (!salir);
+
+        input.close();
     }
 }
